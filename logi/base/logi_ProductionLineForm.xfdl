@@ -1,0 +1,166 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FDL version="1.5">
+  <TypeDefinition url="..\..\default_typedef.xml"/>
+  <Form id="logi_ProductionLineForm" left="0" top="0" width="1024" height="768" titletext="생산 라인 관리" onload="logi_ProductionLineForm_onload">
+    <Layouts>
+      <Layout width="1024" height="768">
+        <Static id="productionLine_static" taborder="0" text="생산라인관리" onclick="Static00_onclick" left="14" top="9" right="14" height="45" style="border:3 solid darkgray ;font:bold 16 함초롬돋움,돋움;"/>
+        <Button id="addProductionLine_btn" taborder="1" text="추가" onclick="addProductionLine_btn_onclick" left="730" top="63" width="85" height="30"/>
+        <Button id="delProductionLine_btn" taborder="2" text="삭제" onclick="delProductionLine_btn_onclick" left="825" top="63" width="85" height="30"/>
+        <Button id="saveProductionLine_btn" taborder="3" text="저장" left="919" top="63" width="85" height="30" onclick="saveProductionLine_btn_onclick"/>
+        <Grid id="Grid00" taborder="4" useinputpanel="false" left="3.81%" top="119" right="2.34%" height="302" binddataset="ds_productionLine" autosizingtype="row" autosizebandtype="body" oncelldblclick="Grid00_oncelldblclick">
+          <Formats>
+            <Format id="default">
+              <Columns>
+                <Column size="192"/>
+                <Column size="192"/>
+                <Column size="192"/>
+                <Column size="192"/>
+                <Column size="192"/>
+              </Columns>
+              <Rows>
+                <Row size="24" band="head"/>
+                <Row size="24"/>
+              </Rows>
+              <Band id="head">
+                <Cell text="생산라인코드"/>
+                <Cell col="1" text="생산가능품목코드"/>
+                <Cell col="2" text="최소가용인원"/>
+                <Cell col="3" text="최대가용인원"/>
+                <Cell col="4" text="일일평균생산량"/>
+              </Band>
+              <Band id="body">
+                <Cell edittype="normal" text="bind:PRODUCTION_LINE_CODE" editdisplay="edit"/>
+                <Cell col="1" edittype="none" text="bind:PRODUCTABLE_ITEM_CODE"/>
+                <Cell col="2" edittype="normal" text="bind:MIN_AVL_STAFF"/>
+                <Cell col="3" edittype="normal" text="bind:MAX_AVL_STAFF"/>
+                <Cell col="4" edittype="normal" text="bind:DAILY_AVRG_PRDCT"/>
+              </Band>
+            </Format>
+          </Formats>
+        </Grid>
+      </Layout>
+    </Layouts>
+    <Objects>
+      <Dataset id="ds_productionLine">
+        <ColumnInfo>
+          <Column id="PRODUCTION_LINE_CODE" type="STRING" size="256"/>
+          <Column id="PRODUCTABLE_ITEM_CODE" type="STRING" size="256"/>
+          <Column id="MIN_AVL_STAFF" type="STRING" size="256"/>
+          <Column id="MAX_AVL_STAFF" type="STRING" size="256"/>
+          <Column id="DAILY_AVRG_PRDCT" type="STRING" size="256"/>
+        </ColumnInfo>
+      </Dataset>
+    </Objects>
+    <Script type="xscript5.0"><![CDATA[/********************************************************************************                                                                            
+@Path			생산라인관리              				   				
+@Description	생산라인 등록/조회/수정/삭제
+@Author	  		박주영		                        								                                            
+@Create         2019. 05. 22.                             		                    				                                            
+********************************************************************************/
+this.logi_ProductionLineForm_onload = function(obj:Form, e:nexacro.LoadEventInfo)
+{
+	//생산라인 조회
+	this.transaction(
+		"findProductionLineList",
+		"dataURL::logi/logiBase/findProductionLineList.do",
+		"",
+		"ds_productionLine=ds_productionLine",
+		"",
+		"callback",
+		false
+	);
+}
+
+//추가
+this.squenceNo = "";
+this.addProductionLine_btn_onclick = function(obj:Button, e:nexacro.ClickEventInfo)
+{
+	this.transaction(
+		"takeProductionLineSequenceNo",
+		"dataURL::sys/findSequenceNo.do",
+		"",
+		"",
+		"findSeq='PRODUCT_LINE_SEQ'",
+		"callback",
+		false
+	);
+	//alert(this.squenceNo);
+	var Seq = this.squenceNo;
+	var rowNum=this.ds_productionLine.addRow();
+	
+	this.ds_productionLine.setColumn(rowNum,"PRODUCTION_LINE_CODE", Seq);	
+	
+}
+
+//fn_popupCallback
+this.fn_popupCallback = function(strPopupID,strReturn)
+{
+	if(strPopupID == "itemModalFrame"){
+		//this.alert(strReturn)
+		var arr=strReturn.split("/");
+		
+		var row = this.ds_productionLine.rowposition;
+		
+		this.ds_productionLine.setColumn(row, "PRODUCTABLE_ITEM_CODE", arr[0]);
+	}
+}
+
+//삭제
+this.delProductionLine_btn_onclick = function(obj:Button, e:nexacro.ClickEventInfo)
+{
+	if(confirm("삭제하시겠습니까?")){
+		this.ds_productionLine.deleteRow(this.ds_productionLine.rowposition);
+	}
+}
+
+//저장
+this.saveProductionLine_btn_onclick = function(obj:Button, e:nexacro.ClickEventInfo)
+{
+	this.transaction(
+		"batchProductionLine",
+		"dataURL::logi/logiBase/batchProductionLine.do",
+		"ds_productionLine=ds_productionLine:u",
+		"",
+		"",
+		"callback",
+		false
+	)
+}
+
+//콜백
+this.callback = function(trid, ErrorCode, ErrorMsg){
+	if(trid == "findProductionLineList"){
+		if(ErrorCode<0){
+			application.alert("온로드 실패");
+		} else {	
+		
+		}
+	} else if(trid == "batchProductionLine"){
+		if(ErrorCode<0){
+			application.alert("저장 실패");
+		} else {	
+			application.alert("저장 성공");		
+		}
+	
+	}else if(trid == "findSequenceNo"){
+		if(ErrorCode<0){
+			//this.alert("시퀀스 받아오기 성공!");
+		}
+	}
+}
+
+this.Grid00_oncelldblclick = function(obj:Grid, e:nexacro.GridClickEventInfo)
+{
+	if(e.cell == 1){
+		var itemModalFrame = new ChildFrame();
+		itemModalFrame.init(
+				"itemModalFrame", "absolute", 30, 30, 30, 30, null, null, "logi_purchase::logi_ItemDialog.xfdl"
+		);
+		itemModalFrame.showModal(
+			this.getOwnerFrame(), null, this, "fn_popupCallback"
+		);
+	}
+}]]></Script>
+  </Form>
+</FDL>

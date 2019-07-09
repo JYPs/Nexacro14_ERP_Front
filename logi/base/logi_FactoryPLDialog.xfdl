@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FDL version="1.5">
+  <TypeDefinition url="..\..\default_typedef.xml"/>
+  <Form id="logi_updateFactoryPLDialog" left="0" top="0" width="1024" height="768" titletext="공장생산라인확인" oninit="logi_updateFactoryPLDialog_oninit">
+    <Layouts>
+      <Layout>
+        <Static id="Factory_stc" taborder="0" text="공장 생산라인 확인" onclick="Static00_onclick" left="14" top="9" right="14" height="45" style="border:3 solid darkgray ;font:bold 16 함초롬돋움,돋움;"/>
+        <Grid id="Grid00" taborder="1" useinputpanel="false" left="1.37%" top="125" right="1.37%" height="586" binddataset="ds_factoryPL">
+          <Formats>
+            <Format id="default">
+              <Columns>
+                <Column size="95"/>
+                <Column size="80"/>
+                <Column size="80"/>
+                <Column size="119"/>
+                <Column size="94"/>
+                <Column size="125"/>
+                <Column size="165"/>
+                <Column size="137"/>
+                <Column size="102"/>
+              </Columns>
+              <Rows>
+                <Row size="24" band="head"/>
+                <Row size="24"/>
+              </Rows>
+              <Band id="head">
+                <Cell text="공장코드"/>
+                <Cell col="1" text="공장구역"/>
+                <Cell col="2" text="생산라인코드"/>
+                <Cell col="3" text="가용상태"/>
+                <Cell col="4" text="생산품목코드"/>
+                <Cell col="5" text="생산목표수량"/>
+                <Cell col="6" text="현재생산량"/>
+                <Cell col="7" text="작업종료예정일"/>
+                <Cell col="8" text="작업지시번호"/>
+              </Band>
+              <Band id="body">
+                <Cell text="bind:FACTORY_CODE"/>
+                <Cell col="1" text="bind:FACTORY_PRODUCTION_LINE_NO"/>
+                <Cell col="2" text="bind:PRODUCTION_LINE_CODE"/>
+                <Cell col="3" text="bind:AVAILABLE_STATUS"/>
+                <Cell col="4" text="bind:PRODUCT_CODE"/>
+                <Cell col="5" text="bind:JOB_GOAL_COUNT"/>
+                <Cell col="6" text="bind:PRODUCTION_COUNT"/>
+                <Cell col="7" text="bind:JOB_END_DATE"/>
+                <Cell col="8" text="bind:WORK_INSTRUCTION_NO"/>
+              </Band>
+            </Format>
+          </Formats>
+        </Grid>
+      </Layout>
+    </Layouts>
+    <Objects>
+      <Dataset id="ds_factoryPL">
+        <ColumnInfo>
+          <Column id="FACTORY_CODE" type="STRING" size="256"/>
+          <Column id="FACTORY_PRODUCTION_LINE_NO" type="STRING" size="256"/>
+          <Column id="PRODUCTION_LINE_CODE" type="STRING" size="256"/>
+          <Column id="AVAILABLE_STATUS" type="STRING" size="256"/>
+          <Column id="PRODUCT_CODE" type="STRING" size="256"/>
+          <Column id="JOB_GOAL_COUNT" type="STRING" size="256"/>
+          <Column id="PRODUCTION_COUNT" type="STRING" size="256"/>
+          <Column id="JOB_END_DATE" type="STRING" size="256"/>
+          <Column id="WORK_INSTRUCTION_NO" type="STRING" size="256"/>
+        </ColumnInfo>
+      </Dataset>
+    </Objects>
+    <Script type="xscript5.0"><![CDATA[
+this.logi_updateFactoryPLDialog_oninit = function(obj:Form, e:nexacro.InitEventInfo)
+{
+	var row = this.opener.ds_workInstruction.rowposition;
+	var workInstructionNo = this.opener.ds_workInstruction.getColumn(row, "WORK_INSTRUCTION_NO");
+	
+	 this.transaction("findFactoryProductionLines",
+    "dataURL::logi/logiBase/findFactoryProductionLines.do",
+    "",    
+    "ds_factoryPL=ds_factoryPL",
+    "code='workInstructionNo' workInstructionNo='"+workInstructionNo+"'",
+    "callback");
+	
+}]]></Script>
+  </Form>
+</FDL>

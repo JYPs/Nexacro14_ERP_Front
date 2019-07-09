@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FDL version="1.5">
+  <TypeDefinition url="..\..\default_typedef.xml"/>
+  <Form id="logi_updateFactoryPLDialog" left="0" top="0" width="1024" height="768" titletext="공장 생산라인 관리" oninit="logi_updateFactoryPLDialog_oninit">
+    <Layouts>
+      <Layout>
+        <Static id="Factory_stc" taborder="0" text="공장 생산라인 수정" onclick="Static00_onclick" left="14" top="9" right="14" height="45" style="border:3 solid darkgray ;font:bold 16 함초롬돋움,돋움;"/>
+        <Grid id="Grid00" taborder="1" useinputpanel="false" left="1.37%" top="125" right="1.37%" height="586" binddataset="ds_factoryPL">
+          <Formats>
+            <Format id="default">
+              <Columns>
+                <Column size="95"/>
+                <Column size="75"/>
+                <Column size="100"/>
+                <Column size="75"/>
+                <Column size="110"/>
+                <Column size="125"/>
+                <Column size="165"/>
+                <Column size="137"/>
+                <Column size="102"/>
+              </Columns>
+              <Rows>
+                <Row size="24" band="head"/>
+                <Row size="24"/>
+              </Rows>
+              <Band id="head">
+                <Cell text="공장코드"/>
+                <Cell col="1" text="공장구역"/>
+                <Cell col="2" text="생산라인코드"/>
+                <Cell col="3" text="가용상태"/>
+                <Cell col="4" text="생산품목코드"/>
+                <Cell col="5" text="생산목표수량"/>
+                <Cell col="6" text="현재생산량"/>
+                <Cell col="7" text="작업종료예정일"/>
+                <Cell col="8" text="작업지시번호"/>
+              </Band>
+              <Band id="body">
+                <Cell text="bind:FACTORY_CODE"/>
+                <Cell col="1" text="bind:FACTORY_PRODUCTION_LINE_NO"/>
+                <Cell col="2" text="bind:PRODUCTION_LINE_CODE"/>
+                <Cell col="3" text="bind:AVAILABLE_STATUS"/>
+                <Cell col="4" text="bind:PRODUCT_CODE"/>
+                <Cell col="5" edittype="none" text="bind:JOB_GOAL_COUNT"/>
+                <Cell col="6" edittype="text" text="bind:PRODUCTION_COUNT"/>
+                <Cell col="7" text="bind:JOB_END_DATE"/>
+                <Cell col="8" text="bind:WORK_INSTRUCTION_NO"/>
+              </Band>
+            </Format>
+          </Formats>
+        </Grid>
+        <Button id="btn_add" taborder="2" text="추가" left="72.36%" top="75" right="15.63%" height="37" onclick="Buttonadd_onclick"/>
+        <Button id="btn_save" taborder="3" text="저장" left="71.39%" top="719" right="16.6%" height="37" onclick="btn_save_onclick"/>
+        <Button id="btn_close" taborder="4" text="취소" left="85.64%" top="719" right="2.34%" height="37"/>
+        <Button id="btn_delete" taborder="5" text="삭제" left="86.62%" top="75" right="1.37%" height="37"/>
+      </Layout>
+    </Layouts>
+    <Objects>
+      <Dataset id="ds_factoryPL">
+        <ColumnInfo>
+          <Column id="FACTORY_CODE" type="STRING" size="256"/>
+          <Column id="FACTORY_PRODUCTION_LINE_NO" type="STRING" size="256"/>
+          <Column id="PRODUCTION_LINE_CODE" type="STRING" size="256"/>
+          <Column id="AVAILABLE_STATUS" type="STRING" size="256"/>
+          <Column id="PRODUCT_CODE" type="STRING" size="256"/>
+          <Column id="JOB_GOAL_COUNT" type="STRING" size="256"/>
+          <Column id="PRODUCTION_COUNT" type="STRING" size="256"/>
+          <Column id="JOB_END_DATE" type="STRING" size="256"/>
+          <Column id="WORK_INSTRUCTION_NO" type="STRING" size="256"/>
+        </ColumnInfo>
+      </Dataset>
+    </Objects>
+    <Script type="xscript5.0"><![CDATA[var factoryCode = "";
+this.logi_updateFactoryPLDialog_oninit = function(obj:Form, e:nexacro.InitEventInfo)
+{
+	this.transaction(
+		"findProductionLineList",
+		"dataURL::logi/logiBase/findProductionLineList.do",
+		"",
+		"ds_productionLine=ds_productionLine",
+		"",
+		"callback"
+	);
+	var FPLLine = this.opener.ds_factoryPL.rowposition;
+	factoryCode = this.opener.ds_factoryPL.getColumn(FPLLine, "FACTORY_CODE");
+	
+	//alert(factoryCode);
+
+	 this.transaction("findFactoryProductionLines",
+		"dataURL::logi/logiBase/findFactoryProductionLines.do",
+		"",
+		"ds_factoryPL=ds_factoryPL",
+		"code='factoryCode' factoryCode='"+factoryCode+"'" ,
+		"callback");
+
+	 
+
+}
+
+
+
+this.Buttonadd_onclick = function(obj:Button, e:nexacro.ClickEventInfo)
+{
+	var factoryRow = this.opener.ds_factory.rowposition;
+	var factoryAvailableCapacity = parseInt(this.opener.ds_factory.getColumn(factoryRow, "AVAILABLE_CAPACITY"));
+	var FPLLineRows = parseInt(this.ds_factoryPL.getRowCount());
+	
+	//availablecapacity는 선택한 공장에 생산라인을 설치할 수 있는 갯수를 나타냅니다. 즉 같거나 많으면
+	//공장 수용능력을 초과해 설치를 더이상 할 수 없는 것입니다.
+// 	if(factoryAvailableCapacity<=FPLLineRows){
+// 		alert("공장 수용능력을 초과 하였습니다");
+// 	}else{
+		var row = this.ds_factoryPL.addRow();
+		this.ds_factoryPL.setColumn(row, "FACTORY_CODE", factoryCode);
+		this.ds_factoryPL.setColumn(row, "AVAILABLE_STATUS", "대기중");
+		this.ds_factoryPL.setColumn(row, "FACTORY_PRODUCTION_LINE_NO",FPLLineRows+1 );
+	/*}*/
+}
+
+this.btn_save_onclick = function(obj:Button, e:nexacro.ClickEventInfo)
+{
+	 this.transaction("registerFactoryPLs",
+		"dataURL::logi/logiBase/registerFactoryPLs.do",
+		"ds_factoryPL=ds_factoryPL:U",
+		"",
+		"",
+		"callback");
+		
+	this.close();
+}
+]]></Script>
+  </Form>
+</FDL>

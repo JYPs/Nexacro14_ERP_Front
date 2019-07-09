@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FDL version="1.5">
+  <TypeDefinition url="..\..\default_typedef.xml"/>
+  <Form id="logi_DispositionOfWorkmanForm" left="0" top="0" width="786" height="440" titletext="배치인원" onload="logi_DispositionOfWorkmanForm_onload">
+    <Layouts>
+      <Layout width="786" height="440">
+        <Static id="sys_bisinessPlace_stc" taborder="0" text="배치인원 관리" onclick="Static00_onclick" left="29" top="11" right="23" height="45" style="border:3 solid darkgray ;color:dimgray;font:bold 16 함초롬돋움,돋움;"/>
+        <Grid id="Grid00" taborder="1" useinputpanel="false" left="3.1%" top="128" right="3.42%" height="307" binddataset="ds_disposition_of_workman">
+          <Formats>
+            <Format id="default">
+              <Columns>
+                <Column size="100"/>
+                <Column size="135"/>
+                <Column size="100"/>
+                <Column size="100"/>
+                <Column size="100"/>
+                <Column size="100"/>
+                <Column size="90"/>
+              </Columns>
+              <Rows>
+                <Row size="24" band="head"/>
+                <Row size="24"/>
+              </Rows>
+              <Band id="head">
+                <Cell text="공장코드"/>
+                <Cell col="1" text="공장_생산라인No"/>
+                <Cell col="2" text="생산라인코드"/>
+                <Cell col="3" text="사원코드"/>
+                <Cell col="4" text="사원이름"/>
+                <Cell col="5" text="사원직책"/>
+                <Cell col="6" text="고용상태"/>
+              </Band>
+              <Band id="body">
+                <Cell text="bind:FACTORY_CODE"/>
+                <Cell col="1" text="bind:FACTORY_PRODUCTION_LINE_NO"/>
+                <Cell col="2" text="bind:PRODUCTION_LINE_CODE"/>
+                <Cell col="3" text="bind:EMP_CODE"/>
+                <Cell col="4" text="bind:EMP_NAME"/>
+                <Cell col="5" text="bind:POSITION"/>
+                <Cell col="6" text="bind:EMPLOYMENT_STATUS"/>
+              </Band>
+            </Format>
+          </Formats>
+        </Grid>
+      </Layout>
+    </Layouts>
+    <Objects>
+      <Dataset id="ds_disposition_of_workman">
+        <ColumnInfo>
+          <Column id="FACTORY_CODE" type="STRING" size="256"/>
+          <Column id="FACTORY_PRODUCTION_LINE_NO" type="STRING" size="256"/>
+          <Column id="PRODUCTION_LINE_CODE" type="STRING" size="256"/>
+          <Column id="EMP_CODE" type="STRING" size="256"/>
+          <Column id="EMP_NAME" type="STRING" size="256"/>
+          <Column id="POSITION" type="STRING" size="256"/>
+          <Column id="EMPLOYMENT_STATUS" type="STRING" size="256"/>
+        </ColumnInfo>
+      </Dataset>
+      <Dataset id="ds_factory">
+        <ColumnInfo>
+          <Column id="FACTORY_CODE" type="STRING" size="256"/>
+          <Column id="FACTORY_NAME" type="STRING" size="256"/>
+          <Column id="FACTORY_MANAGER_CODE" type="STRING" size="256"/>
+          <Column id="AVAILABLE_CAPACITY" type="STRING" size="256"/>
+          <Column id="AVAILABLE_STATUS" type="STRING" size="256"/>
+          <Column id="PHONE" type="STRING" size="256"/>
+          <Column id="ADRESS" type="STRING" size="256"/>
+        </ColumnInfo>
+      </Dataset>
+    </Objects>
+    <Script type="xscript5.0"><![CDATA[
+this.logi_DispositionOfWorkmanForm_onload = function(obj:Form, e:nexacro.LoadEventInfo)
+{
+	var row=this.opener.ds_factory.rowposition;
+	var factoryCode = this.opener.ds_factory.getColumn(row,"FACTORY_CODE");
+	//동적쿼리를 사용하기 위해
+	var fPLNo = "a";
+	if(this.parent.code == 'productionLine'){
+		var productionRow = this.opener.ds_factoryPL.rowposition;
+		fPLNo = this.opener.ds_factoryPL.getColumn(productionRow, "FACTORY_PRODUCTION_LINE_NO");
+	}
+	
+	trace("fPLNo:"+fPLNo);
+ 	//배치인원 조회
+	this.transaction
+	(
+		"findDispositionOfWorkman",
+		"dataURL::logi/logiBase/findDispositionOfWorkman.do",
+		"",
+		"ds_disposition_of_workman=ds_disposition_of_workman",
+		"code='"+this.parent.code+"' factoryCode='"+factoryCode+"' fPLNo='"+fPLNo+"'",
+		"callback",
+		false
+	);
+// 	var strXml;
+// 	strXml = this.ds_disposition_of_workman.saveXML("ds_disposition_of_workman");
+// 	trace(strXml);
+
+	
+	
+	
+}
+]]></Script>
+  </Form>
+</FDL>

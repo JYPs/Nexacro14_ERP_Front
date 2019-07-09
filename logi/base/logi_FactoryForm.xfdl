@@ -1,0 +1,244 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FDL version="1.5">
+  <TypeDefinition url="..\..\default_typedef.xml"/>
+  <Form id="logi_FactoryForm" left="0" top="0" width="1024" height="768" titletext="공장관리" oninit="logi_FactoryForm_oninit">
+    <Layouts>
+      <Layout width="1024" height="768">
+        <Static id="Factory_stc" taborder="0" text="공장 관리" onclick="Static00_onclick" left="14" top="9" right="14" height="45" style="border:3 solid darkgray ;font:bold 16 함초롬돋움,돋움;"/>
+        <Div id="div_Factory" taborder="1" text="Div00" left="1.56%" top="70" right="1.37%" height="686" style="background:antiquewhite;">
+          <Layouts>
+            <Layout>
+              <Grid id="Grid00" taborder="0" useinputpanel="false" left="1.21%" top="66" right="1.01%" height="227" binddataset="ds_factory" autosizingtype="row" oncellclick="div_Factory_Grid00_oncellclick">
+                <Formats>
+                  <Format id="default">
+                    <Columns>
+                      <Column size="120"/>
+                      <Column size="104"/>
+                      <Column size="119"/>
+                      <Column size="119"/>
+                      <Column size="126"/>
+                      <Column size="120"/>
+                      <Column size="270"/>
+                    </Columns>
+                    <Rows>
+                      <Row size="24" band="head"/>
+                      <Row size="24"/>
+                    </Rows>
+                    <Band id="head">
+                      <Cell text="공장코드" autosizerow="default"/>
+                      <Cell col="1" text="공장명"/>
+                      <Cell col="2" text="책임자"/>
+                      <Cell col="3" text="가용능력"/>
+                      <Cell col="4" text="가용상태"/>
+                      <Cell col="5" text="전화번호"/>
+                      <Cell col="6" text="주소" autosizecol="limitmax"/>
+                    </Band>
+                    <Band id="body">
+                      <Cell text="bind:FACTORY_CODE"/>
+                      <Cell col="1" text="bind:FACTORY_NAME"/>
+                      <Cell col="2" text="bind:FACTORY_MANAGER_CODE"/>
+                      <Cell col="3" text="bind:AVAILABLE_CAPACITY"/>
+                      <Cell col="4" text="bind:AVAILABLE_STATUS"/>
+                      <Cell col="5" text="bind:PHONE"/>
+                      <Cell col="6" text="bind:ADRESS"/>
+                    </Band>
+                  </Format>
+                </Formats>
+              </Grid>
+              <Static id="Static00" taborder="1" text="공장정보" left="1.81%" top="14" right="84.81%" height="42" style="border:1 solid darkred ;color:black;"/>
+              <Static id="Static01" taborder="2" text="공장생산라인정보" left="1.11%" top="320" right="85.51%" height="42" style="border:1 solid darkred ;color:black;"/>
+              <Grid id="Grid01" taborder="3" useinputpanel="false" left="1.21%" top="370" right="1.01%" height="305" autosizingtype="row" oncelldblclick="div_Factory_Grid01_oncelldblclick" binddataset="ds_factoryPL">
+                <Formats>
+                  <Format id="default">
+                    <Columns>
+                      <Column size="115"/>
+                      <Column size="73"/>
+                      <Column size="124"/>
+                      <Column size="124"/>
+                      <Column size="117"/>
+                      <Column size="100"/>
+                      <Column size="110"/>
+                      <Column size="91"/>
+                      <Column size="120"/>
+                    </Columns>
+                    <Rows>
+                      <Row size="24" band="head"/>
+                      <Row size="24"/>
+                    </Rows>
+                    <Band id="head">
+                      <Cell text="공장코드"/>
+                      <Cell col="1" text="공장구역"/>
+                      <Cell col="2" text="생산라인코드"/>
+                      <Cell col="3" text="가용상태"/>
+                      <Cell col="4" text="생산품목코드"/>
+                      <Cell col="5" text="생산목표량"/>
+                      <Cell col="6" text="현재생산량"/>
+                      <Cell col="7" text="작업종료일"/>
+                      <Cell col="8" text="작업지시번호"/>
+                    </Band>
+                    <Band id="body">
+                      <Cell text="bind:FACTORY_CODE"/>
+                      <Cell col="1" text="bind:FACTORY_PRODUCTION_LINE_NO"/>
+                      <Cell col="2" text="bind:PRODUCTION_LINE_CODE"/>
+                      <Cell col="3" text="bind:AVAILABLE_STATUS"/>
+                      <Cell col="4" text="bind:PRODUCT_CODE"/>
+                      <Cell col="5" text="bind:JOB_GOAL_COUNT"/>
+                      <Cell col="6" text="bind:PRODUCTION_COUNT"/>
+                      <Cell col="7" text="bind:JOB_END_DATE"/>
+                      <Cell col="8" text="bind:WORK_INSTRUCTION_NO"/>
+                    </Band>
+                  </Format>
+                </Formats>
+              </Grid>
+              <Static id="Static02" taborder="5" text="품목코드" left="72.74%" top="14" right="13.88%" height="42" style="border:1 solid darkred ;color:black;"/>
+              <Combo id="combo_item" taborder="6" left="86.62%" top="14" right="1.01%" height="42" innerdataset="@ds_item" codecolumn="ITEM_CODE" datacolumn="ITEM_NAME" onitemchanged="div_Factory_combo_item_onchanged"/>
+              <Button id="btn_update" taborder="7" text="생산라인 수정" left="85.11%" top="313" right="1.01%" height="49" style="background:burlywood;color:black;" onclick="div_Factory_btn_update_onclick"/>
+              <Button id="btn_workman" taborder="8" text="배치인원조회" left="58.25%" top="14" right="28.37%" height="42" style="background:burlywood;color:black;" onclick="div_Factory_btn_workman_onclick"/>
+            </Layout>
+          </Layouts>
+        </Div>
+      </Layout>
+    </Layouts>
+    <Objects>
+      <Dataset id="ds_factory">
+        <ColumnInfo>
+          <Column id="FACTORY_CODE" type="STRING" size="256"/>
+          <Column id="FACTORY_NAME" type="STRING" size="256"/>
+          <Column id="FACTORY_MANAGER_CODE" type="STRING" size="256"/>
+          <Column id="AVAILABLE_CAPACITY" type="STRING" size="256"/>
+          <Column id="AVAILABLE_STATUS" type="STRING" size="256"/>
+          <Column id="PHONE" type="STRING" size="256"/>
+          <Column id="ADRESS" type="STRING" size="256"/>
+        </ColumnInfo>
+      </Dataset>
+      <Dataset id="ds_factoryPL">
+        <ColumnInfo>
+          <Column id="FACTORY_CODE" type="STRING" size="256"/>
+          <Column id="FACTORY_PRODUCTION_LINE_NO" type="STRING" size="256"/>
+          <Column id="PRODUCTION_LINE_CODE" type="STRING" size="256"/>
+          <Column id="AVAILABLE_STATUS" type="STRING" size="256"/>
+          <Column id="PRODUCT_CODE" type="STRING" size="256"/>
+          <Column id="JOB_GOAL_COUNT" type="STRING" size="256"/>
+          <Column id="PRODUCTION_COUNT" type="STRING" size="256"/>
+          <Column id="JOB_END_DATE" type="STRING" size="256"/>
+          <Column id="WORK_INSTRUCTION_NO" type="STRING" size="256"/>
+        </ColumnInfo>
+      </Dataset>
+      <Dataset id="ds_item">
+        <ColumnInfo>
+          <Column id="ITEM_CODE" type="STRING" size="256"/>
+          <Column id="ITEM_NAME" type="STRING" size="256"/>
+          <Column id="ITEM_GROUP_CODE" type="STRING" size="256"/>
+          <Column id="ITEM_CLASSIFICATION" type="STRING" size="256"/>
+          <Column id="UNIT_OF_STOCK" type="STRING" size="256"/>
+          <Column id="LOSS_RATE" type="STRING" size="256"/>
+          <Column id="LEAD_TIME" type="STRING" size="256"/>
+          <Column id="STANDARD_UNIT_PRICE" type="STRING" size="256"/>
+          <Column id="DESCRIPTION" type="STRING" size="256"/>
+        </ColumnInfo>
+      </Dataset>
+    </Objects>
+    <Script type="xscript5.0"><![CDATA[
+this.logi_FactoryForm_oninit = function(obj:Form, e:nexacro.InitEventInfo)
+{
+		this.transaction("findFactoryList",
+		"dataURL::logi/logiBase/findFactoryList.do",
+		"",
+		"ds_factory=ds_factory",
+		"itemCode='all'",
+		"callback");
+
+		this.transaction("findItemList",
+		"dataURL::logi/purchase/findItemList.do",
+		"",
+		"ds_item=ds_item",
+		"",
+		"callback", false);
+    this.ds_item.filter("ITEM_CLASSIFICATION != 'IT-MA'");
+}
+
+//선택된 공장의 생산라인정보를 불러옴
+this.div_Factory_Grid00_oncellclick = function(obj:Grid, e:nexacro.GridClickEventInfo)
+{
+	//code는 동적쿼리를 위해 날리는 값
+	var factoryCode = this.ds_factory.getColumn(e.row, "FACTORY_CODE");
+	 this.transaction("findFactoryProductionLines",
+    "dataURL::logi/logiBase/findFactoryProductionLines.do",
+    "",    
+    "ds_factoryPL=ds_factoryPL",
+    "code = 'factoryCode' factoryCode ='"+factoryCode+"'" ,
+    "callback");
+}
+//선택된 품목을 생산하는 공장을 찾을 메서드
+this.div_Factory_combo_item_onchanged = function(obj:Combo, e:nexacro.ComboCloseUpEventInfo)
+{
+	var itemCode = obj.value;
+		this.transaction("findFactoryList",
+		"dataURL::logi/logiBase/findFactoryList.do",
+		"",
+		"ds_factory=ds_factory",
+		"itemCode='"+itemCode+"'",
+		"callback");
+}
+
+//배치인원 확인
+
+
+
+
+this.div_Factory_Grid01_oncelldblclick = function(obj:Grid, e:nexacro.GridClickEventInfo)
+{
+		var workmanModalFrame = new ChildFrame();
+		workmanModalFrame.init("modalFrame","absolute", 30, 30, 300, 300, null, null, "logi_base::logi_DispositionOfWorkmanForm.xfdl");
+		workmanModalFrame.showModal(
+		this.getOwnerFrame(), {code:"productionLine"}, this, "fn_disposition_popupCallback");
+}
+
+
+//생산라인 수정하는 곳
+
+
+this.div_Factory_btn_update_onclick = function(obj:Button, e:nexacro.ClickEventInfo)
+{
+	var factoryPLRow = this.ds_factoryPL.rowposition;
+	if(factoryPLRow<0){
+		alert("생산라인을 선택해주세요");
+	}else{
+		
+	
+	var objChildFrame = new ChildFrame();
+	objChildFrame.init("updateProductionLine"
+					,"absolute"
+                      , 0
+                      , 0
+                      , 400
+                      , 350
+                      , null
+                      , null
+                      , "logi_base::logi_updateFactoryPLDialog.xfdl");
+          
+         objChildFrame.showModal("aa",this.getOwnerFrame()
+								,null
+								,this
+								,"fn_popupCallback");         
+
+	}
+	
+	
+}
+
+
+
+//****************
+this.div_Factory_btn_workman_onclick = function(obj:Button, e:nexacro.ClickEventInfo)
+{
+	var workmanModalFrame = new ChildFrame("workmanFrame", "absolute", 30, 30, 30, 30, null, null, "logi_base::logi_DispositionOfWorkmanForm.xfdl");
+	workmanModalFrame.showModal(this.getOwnerFrame(), {code:"factory"}, this, "");
+}
+
+this.fn_popupCallback = function(){
+	this.reload();
+}
+]]></Script>
+  </Form>
+</FDL>
